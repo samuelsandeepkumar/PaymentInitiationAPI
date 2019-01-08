@@ -1,0 +1,877 @@
+{
+  "openapi" : "3.0.0",
+  "servers" : [ {
+    "url" : "https://api.example.com:443/"
+  } ],
+  "info" : {
+    "description" : "This is Payment Inititation API",
+    "version" : "1.0.0",
+    "title" : "Payment Initiation and Inquiry",
+    "contact" : {
+      "email" : "TechSupport@intellectdesign.com"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "tags" : [ {
+    "name" : "apiusers",
+    "description" : "Operations available to authorized API users"
+  } ],
+  "paths" : {
+    "/payments" : {
+      "get" : {
+        "tags" : [ "apiusers" ],
+        "summary" : "searches payment(s) available in PSH-C and returns results based on provided search criteria",
+        "operationId" : "paymentInquiry",
+        "description" : "By passing in the appropriate parameters, you can search for payments available in PSH-C system",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "fromDate",
+          "description" : "pass from date for looking up payments in PSH-C",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "toDate",
+          "description" : "pass to date for looking up payments in PSH-C",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "beneficiaryName",
+          "description" : "pass bene name for looking up payments in PSH-C",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "transit",
+          "description" : "pass transit/settlement account number for looking up payments in PSH-C",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "skip",
+          "description" : "number of records to skip for pagination",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 0
+          }
+        }, {
+          "in" : "query",
+          "name" : "limit",
+          "description" : "maximum number of records to return",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 0,
+            "maximum" : 50,
+            "example" : 25
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "search results matching criteria",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/responses/Inquiry"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "bad input parameter"
+          },
+          "401" : {
+            "$ref" : "#/components/responses/UnauthorizedError"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "apiusers" ],
+        "summary" : "Inititate payment(s) using PSH-C",
+        "operationId" : "paymentInitiation",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "dataType",
+          "schema" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "required" : true
+        }, {
+          "in" : "header",
+          "name" : "requestBytes",
+          "schema" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "required" : true
+        }, {
+          "in" : "header",
+          "name" : "payloadID",
+          "schema" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "required" : true
+        }, {
+          "in" : "header",
+          "name" : "formName",
+          "schema" : {
+            "type" : "string",
+            "format" : "byte"
+          },
+          "required" : true
+        } ],
+        "description" : "Initiates a payment in PSH-C and provides corresponding response",
+        "responses" : {
+          "200" : {
+            "description" : "ACK/NACK is sent based on the initiated payment status",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/responses/SyncResponseACK"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          },
+          "409" : {
+            "description" : "A Payment already exists with the specified data"
+          },
+          "401" : {
+            "$ref" : "#/components/responses/UnauthorizedError"
+          }
+        },
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/InitiatePayment"
+              }
+            }
+          },
+          "description" : "Payment to be initiated in PSH-C",
+          "required" : true
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "InitiatePayment" : {
+        "type" : "object",
+        "properties" : {
+          "Document" : {
+            "type" : "object",
+            "properties" : {
+              "CstmrCdtTrfInitn" : {
+                "type" : "object",
+                "properties" : {
+                  "GrpHdr" : {
+                    "type" : "object",
+                    "properties" : {
+                      "messageId" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "maxLength" : 35,
+                        "example" : "CMO120928CCT001"
+                      },
+                      "creationDateTime" : {
+                        "type" : "string",
+                        "maxLength" : 20,
+                        "format" : "date-time"
+                      },
+                      "noOfTxns" : {
+                        "type" : "integer",
+                        "maxLength" : 15,
+                        "example" : "1"
+                      },
+                      "controlSum" : {
+                        "type" : "integer",
+                        "maxLength" : 18,
+                        "example" : "10000000"
+                      },
+                      "authorization" : {
+                        "type" : "object",
+                        "properties" : {
+                          "Prtry" : {
+                            "type" : "string",
+                            "format" : "byte",
+                            "maxLength" : 140,
+                            "example" : "Retry"
+                          }
+                        }
+                      },
+                      "initPartyDetails" : {
+                        "type" : "object",
+                        "properties" : {
+                          "Name" : {
+                            "type" : "string",
+                            "format" : "byte",
+                            "maxLength" : 140,
+                            "example" : "ABC Corporation"
+                          },
+                          "PstlAdr" : {
+                            "type" : "object",
+                            "properties" : {
+                              "StrtNm" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "Times Square"
+                              },
+                              "BldgNb" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "7"
+                              },
+                              "PstCd" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "NY 10036"
+                              },
+                              "TwnNm" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "New York"
+                              },
+                              "Ctry" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "US"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "PmtInf" : {
+                    "type" : "object",
+                    "properties" : {
+                      "paymentInfoId" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "maxLength" : 35,
+                        "example" : "ABC/086"
+                      },
+                      "paymentMethod" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "maxLength" : 3,
+                        "example" : "TRF"
+                      },
+                      "batchBooking" : {
+                        "type" : "string",
+                        "example" : "false"
+                      },
+                      "PmtTpInf" : {
+                        "type" : "object",
+                        "properties" : {
+                          "LclInstrm" : {
+                            "type" : "object",
+                            "properties" : {
+                              "Cd" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "maxLength" : 35,
+                                "example" : "TRF"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "requestExecutionDate" : {
+                        "type" : "string",
+                        "format" : "date",
+                        "maxLength" : 20,
+                        "example" : "2012-09-29"
+                      },
+                      "debtorAddressDetails" : {
+                        "type" : "object",
+                        "properties" : {
+                          "debtorName" : {
+                            "type" : "string",
+                            "maxLength" : 140,
+                            "example" : "ABC Corporation"
+                          },
+                          "postalAddress" : {
+                            "type" : "object",
+                            "properties" : {
+                              "streetName" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "Times Square"
+                              },
+                              "buildingNo" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "7"
+                              },
+                              "postalCode" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "NY 10036"
+                              },
+                              "cityName" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "New York"
+                              },
+                              "country" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "maxLength" : 2,
+                                "example" : "US"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "debtorAccountDetails" : {
+                        "type" : "object",
+                        "properties" : {
+                          "id" : {
+                            "type" : "object",
+                            "properties" : {
+                              "Other" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "id" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "00125574999"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "debtorAgentDetail" : {
+                        "type" : "object",
+                        "properties" : {
+                          "financialInstId" : {
+                            "type" : "object",
+                            "properties" : {
+                              "BicOrFI" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "maxLength" : 11,
+                                "example" : "BBBBUS33"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "creditorInformation" : {
+                        "type" : "object",
+                        "properties" : {
+                          "paymentId" : {
+                            "type" : "object",
+                            "properties" : {
+                              "instructionId" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "ABC/120928/CCT001/01"
+                              },
+                              "endToEndId" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "maxLength" : 35,
+                                "example" : "ABC/4562/2012-09-08"
+                              }
+                            }
+                          },
+                          "amount" : {
+                            "type" : "object",
+                            "properties" : {
+                              "instructedAmountDetails" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "instructedCurrency" : {
+                                    "type" : "string",
+                                    "maxLength" : 3,
+                                    "example" : "JPY"
+                                  },
+                                  "instructedAmount" : {
+                                    "type" : "integer",
+                                    "example" : "10000000"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "chargeBearer" : {
+                            "type" : "string",
+                            "maxLength" : 4,
+                            "example" : "SHAR"
+                          },
+                          "creditorAgentDetails" : {
+                            "type" : "object",
+                            "properties" : {
+                              "financialInstId" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "BicOrFI" : {
+                                    "type" : "string",
+                                    "maxLength" : 11,
+                                    "example" : "AAAAGB2L"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "Cdtr" : {
+                            "type" : "object",
+                            "properties" : {
+                              "creditorName" : {
+                                "type" : "string",
+                                "example" : "DEF Electronics"
+                              },
+                              "postalAddress" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "addressLine" : {
+                                    "type" : "string",
+                                    "example" : "Corn Exchange 5th Floor, Mark Lane 55, EC3R7NE London, GB"
+                                  },
+                                  "Dept" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "Treasury department"
+                                  },
+                                  "StrtNm" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "Bush Street"
+                                  },
+                                  "BldgNb" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "13"
+                                  },
+                                  "PstCd" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "CA 94108"
+                                  },
+                                  "TwnNm" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "San Francisco"
+                                  },
+                                  "Ctry" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "US"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "creditorAccountDetails" : {
+                            "type" : "object",
+                            "properties" : {
+                              "id" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "Other" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                      "id" : {
+                                        "type" : "string",
+                                        "example" : "23683707994125"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "IBAN" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "BE30001216371411"
+                              }
+                            }
+                          },
+                          "InstrForCdtrAgt" : {
+                            "type" : "object",
+                            "properties" : {
+                              "Cd" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "PHOB"
+                              },
+                              "InstrInf" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "+32/2/2222222"
+                              }
+                            }
+                          },
+                          "purposeCode" : {
+                            "type" : "object",
+                            "properties" : {
+                              "code" : {
+                                "type" : "string",
+                                "example" : "GDDS"
+                              }
+                            }
+                          },
+                          "remitInfo" : {
+                            "type" : "object",
+                            "properties" : {
+                              "structured" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "RfrdDocInf" : {
+                                    "type" : "object",
+                                    "properties" : {
+                                      "Tp" : {
+                                        "type" : "object",
+                                        "properties" : {
+                                          "CdOrPrtry" : {
+                                            "type" : "object",
+                                            "properties" : {
+                                              "code" : {
+                                                "type" : "string",
+                                                "format" : "byte",
+                                                "example" : "CINV"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "Nb" : {
+                                        "type" : "string",
+                                        "format" : "byte",
+                                        "example" : "4562"
+                                      },
+                                      "RltdDt" : {
+                                        "type" : "string",
+                                        "format" : "date",
+                                        "example" : "2012-09-08"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "SplmtryData" : {
+                        "type" : "object",
+                        "properties" : {
+                          "Envlp" : {
+                            "type" : "object",
+                            "properties" : {
+                              "Cnts" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "SttlmMtd" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "L"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "SplmtryData" : {
+                    "type" : "object",
+                    "properties" : {
+                      "Envlp" : {
+                        "type" : "object",
+                        "properties" : {
+                          "Cnts" : {
+                            "type" : "object",
+                            "properties" : {
+                              "PanId" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "maxLength" : 16,
+                                "example" : "4123456712345678"
+                              },
+                              "FXId" : {
+                                "type" : "string",
+                                "format" : "byte",
+                                "example" : "1234567"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "xml" : {
+              "name" : "InitiatePayment"
+            }
+          }
+        }
+      },
+      "ACK" : {
+        "type" : "object",
+        "properties" : {
+          "Document" : {
+            "type" : "object",
+            "properties" : {
+              "CstmrPmtStsRpt" : {
+                "type" : "object",
+                "properties" : {
+                  "GrpHdr" : {
+                    "type" : "object",
+                    "properties" : {
+                      "MsgId" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "example" : "RSPN170110014883"
+                      },
+                      "CreDtTm" : {
+                        "type" : "string",
+                        "format" : "date-time"
+                      },
+                      "InitgPty" : {
+                        "type" : "object",
+                        "properties" : {
+                          "Nm" : {
+                            "type" : "string",
+                            "format" : "byte",
+                            "example" : "CANADIAN IMPERIAL BANK OF COMMERCE"
+                          },
+                          "Id" : {
+                            "type" : "object",
+                            "properties" : {
+                              "OrgId" : {
+                                "type" : "object",
+                                "properties" : {
+                                  "BICOrBEI" : {
+                                    "type" : "string",
+                                    "format" : "byte",
+                                    "example" : "CIBCCATTXXX"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "OrgnlGrpInfAndSts" : {
+                    "type" : "object",
+                    "properties" : {
+                      "OrgnlMsgId" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "example" : "US 318x1Bw403"
+                      },
+                      "OrgnlMsgNmId" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "example" : "Pain 001.001.03"
+                      },
+                      "GrpSts" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "example" : "ACSP"
+                      }
+                    }
+                  },
+                  "OrgnlPmtInfAndSts" : {
+                    "type" : "object",
+                    "properties" : {
+                      "OrgnlPmtInfId" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "example" : "US 318x1Bx38BATCH9"
+                      },
+                      "PmtInftSts" : {
+                        "type" : "string",
+                        "format" : "byte",
+                        "example" : "ACSP"
+                      },
+                      "TxInfAndSts" : {
+                        "type" : "object",
+                        "properties" : {
+                          "OrgnlInstrId" : {
+                            "type" : "string",
+                            "format" : "byte",
+                            "example" : "US 318x1Bx310"
+                          },
+                          "OrgnlEndToEndId" : {
+                            "type" : "string",
+                            "format" : "byte",
+                            "example" : "US 318x1Bx310"
+                          },
+                          "TxSts" : {
+                            "type" : "string",
+                            "format" : "byte",
+                            "example" : "ACSP"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "xml" : {
+          "name" : "ACK"
+        }
+      },
+      "PaymentInquiry" : {
+        "type" : "object",
+        "required" : [ "pshWorkitemId", "clientPaymentId", "clientFileId", "clientName", "paymentProduct", "clientId", "originatorID", "senderBank", "senderTransitNumber", "senderAccount", "valueDate", "transferCurrency", "transferAmount", "paymentStatus", "receiverName", "receivingBank", "legacyIndicator", "chequeNumber", "remittanceTemplate", "deliveryMethod" ],
+        "properties" : {
+          "pshWorkitemId" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "2815666"
+          },
+          "clientPaymentId" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "PYMT4AT"
+          },
+          "clientFileId" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "Baidhyanath"
+          },
+          "clientName" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "NOVRELSAM2"
+          },
+          "paymentProduct" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "Account Transfer"
+          },
+          "clientId" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "29081982"
+          },
+          "originatorID" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "9708250001"
+          },
+          "senderBank" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "CANADIAN IMPERIAL BANK OF COMMERCE"
+          },
+          "senderTransitNumber" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "00412"
+          },
+          "senderAccount" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "0206113"
+          },
+          "valueDate" : {
+            "type" : "string",
+            "format" : "date",
+            "example" : "2018-12-28"
+          },
+          "transferCurrency" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "USD"
+          },
+          "transferAmount" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "100.010"
+          },
+          "paymentStatus" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "Payment Suspended"
+          },
+          "receiverName" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "PSHTESTPAYEE"
+          },
+          "receivingBank" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "FEDERAL RESERVE BANK"
+          },
+          "legacyIndicator" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "No"
+          },
+          "chequeNumber" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "201655344"
+          },
+          "remittanceTemplate" : {
+            "type" : "string",
+            "format" : "byte",
+            "example" : "INV"
+          },
+          "deliveryMethod" : {
+            "type" : "string",
+            "format" : "byte"
+          }
+        }
+      }
+    },
+    "responses" : {
+      "UnauthorizedError" : {
+        "description" : "Access token is missing or invalid"
+      },
+      "SyncResponseACK" : {
+        "$ref" : "#/components/schemas/ACK"
+      },
+      "Inquiry" : {
+        "$ref" : "#/components/schemas/PaymentInquiry"
+      }
+    },
+    "securitySchemes" : {
+      "bearerTokenAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  },
+  "security" : [ {
+    "bearerTokenAuth" : [ ]
+  } ]
+}
