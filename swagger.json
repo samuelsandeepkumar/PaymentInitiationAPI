@@ -196,28 +196,28 @@
                   "GrpHdr" : {
                     "type" : "object",
                     "properties" : {
-                      "messageId" : {
+                      "MsgId" : {
                         "type" : "string",
                         "format" : "byte",
                         "maxLength" : 35,
                         "example" : "CMO120928CCT001"
                       },
-                      "creationDateTime" : {
+                      "CreDtTm" : {
                         "type" : "string",
                         "maxLength" : 20,
                         "format" : "date-time"
                       },
-                      "noOfTxns" : {
+                      "NbOfTxs" : {
                         "type" : "integer",
                         "maxLength" : 15,
                         "example" : "1"
                       },
-                      "controlSum" : {
+                      "CtrlSum" : {
                         "type" : "integer",
                         "maxLength" : 18,
                         "example" : "10000000"
                       },
-                      "authorization" : {
+                      "Authstn" : {
                         "type" : "object",
                         "properties" : {
                           "Prtry" : {
@@ -228,10 +228,10 @@
                           }
                         }
                       },
-                      "initPartyDetails" : {
+                      "InitgPty" : {
                         "type" : "object",
                         "properties" : {
-                          "Name" : {
+                          "Nm" : {
                             "type" : "string",
                             "format" : "byte",
                             "maxLength" : 140,
@@ -274,19 +274,19 @@
                   "PmtInf" : {
                     "type" : "object",
                     "properties" : {
-                      "paymentInfoId" : {
+                      "PmtInfId" : {
                         "type" : "string",
                         "format" : "byte",
                         "maxLength" : 35,
                         "example" : "ABC/086"
                       },
-                      "paymentMethod" : {
+                      "PmtMtd" : {
                         "type" : "string",
                         "format" : "byte",
                         "maxLength" : 3,
                         "example" : "TRF"
                       },
-                      "batchBooking" : {
+                      "BtchBookg" : {
                         "type" : "string",
                         "example" : "false"
                       },
@@ -306,44 +306,44 @@
                           }
                         }
                       },
-                      "requestExecutionDate" : {
+                      "ReqdExctnDt" : {
                         "type" : "string",
                         "format" : "date",
                         "maxLength" : 20,
                         "example" : "2012-09-29"
                       },
-                      "debtorAddressDetails" : {
+                      "Dbtr" : {
                         "type" : "object",
                         "properties" : {
-                          "debtorName" : {
+                          "Nm" : {
                             "type" : "string",
                             "maxLength" : 140,
                             "example" : "ABC Corporation"
                           },
-                          "postalAddress" : {
+                          "PstlAdr" : {
                             "type" : "object",
                             "properties" : {
-                              "streetName" : {
+                              "StrtNm" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "example" : "Times Square"
                               },
-                              "buildingNo" : {
+                              "BldgNb" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "example" : "7"
                               },
-                              "postalCode" : {
+                              "PstCd" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "example" : "NY 10036"
                               },
-                              "cityName" : {
+                              "TwnNm" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "example" : "New York"
                               },
-                              "country" : {
+                              "Ctry" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "maxLength" : 2,
@@ -353,16 +353,16 @@
                           }
                         }
                       },
-                      "debtorAccountDetails" : {
+                      "DbtrAcct" : {
                         "type" : "object",
                         "properties" : {
-                          "id" : {
+                          "Id" : {
                             "type" : "object",
                             "properties" : {
-                              "Other" : {
+                              "Othr" : {
                                 "type" : "object",
                                 "properties" : {
-                                  "id" : {
+                                  "Id" : {
                                     "type" : "string",
                                     "format" : "byte",
                                     "example" : "00125574999"
@@ -373,13 +373,13 @@
                           }
                         }
                       },
-                      "debtorAgentDetail" : {
+                      "DbtrAgt" : {
                         "type" : "object",
                         "properties" : {
-                          "financialInstId" : {
+                          "FinInstnId" : {
                             "type" : "object",
                             "properties" : {
-                              "BicOrFI" : {
+                              "BICFI" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "maxLength" : 11,
@@ -389,18 +389,18 @@
                           }
                         }
                       },
-                      "creditorInformation" : {
+                      "CdtTrfTxInf" : {
                         "type" : "object",
                         "properties" : {
-                          "paymentId" : {
+                          "PmtId" : {
                             "type" : "object",
                             "properties" : {
-                              "instructionId" : {
+                              "InstrId" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "example" : "ABC/120928/CCT001/01"
                               },
-                              "endToEndId" : {
+                              "EndToEndId" : {
                                 "type" : "string",
                                 "format" : "byte",
                                 "maxLength" : 35,
@@ -408,22 +408,11 @@
                               }
                             }
                           },
-                          "amount" : {
+                          "Amt" : {
                             "type" : "object",
                             "properties" : {
-                              "instructedAmountDetails" : {
-                                "type" : "object",
-                                "properties" : {
-                                  "instructedCurrency" : {
-                                    "type" : "string",
-                                    "maxLength" : 3,
-                                    "example" : "JPY"
-                                  },
-                                  "instructedAmount" : {
-                                    "type" : "integer",
-                                    "example" : "10000000"
-                                  }
-                                }
+                              "InstdAmt" : {
+                                "type" : "integer"
                               }
                             }
                           },
