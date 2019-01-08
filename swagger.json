@@ -60,6 +60,14 @@
           }
         }, {
           "in" : "query",
+          "name" : "paymentId",
+          "description" : "pass payment id for looking up payments in PSH-C",
+          "required" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "in" : "query",
           "name" : "skip",
           "description" : "number of records to skip for pagination",
           "schema" : {
