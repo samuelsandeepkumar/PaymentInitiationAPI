@@ -416,18 +416,18 @@
                               }
                             }
                           },
-                          "chargeBearer" : {
+                          "ChrgBr" : {
                             "type" : "string",
                             "maxLength" : 4,
                             "example" : "SHAR"
                           },
-                          "creditorAgentDetails" : {
+                          "CdtrAgt" : {
                             "type" : "object",
                             "properties" : {
-                              "financialInstId" : {
+                              "FinInstnId" : {
                                 "type" : "object",
                                 "properties" : {
-                                  "BicOrFI" : {
+                                  "BICFI" : {
                                     "type" : "string",
                                     "maxLength" : 11,
                                     "example" : "AAAAGB2L"
@@ -439,14 +439,14 @@
                           "Cdtr" : {
                             "type" : "object",
                             "properties" : {
-                              "creditorName" : {
+                              "Nm" : {
                                 "type" : "string",
                                 "example" : "DEF Electronics"
                               },
-                              "postalAddress" : {
+                              "PstlAdr" : {
                                 "type" : "object",
                                 "properties" : {
-                                  "addressLine" : {
+                                  "AdrLine" : {
                                     "type" : "string",
                                     "example" : "Corn Exchange 5th Floor, Mark Lane 55, EC3R7NE London, GB"
                                   },
@@ -484,16 +484,16 @@
                               }
                             }
                           },
-                          "creditorAccountDetails" : {
+                          "CdtrAcct" : {
                             "type" : "object",
                             "properties" : {
-                              "id" : {
+                              "Id" : {
                                 "type" : "object",
                                 "properties" : {
-                                  "Other" : {
+                                  "Othr" : {
                                     "type" : "object",
                                     "properties" : {
-                                      "id" : {
+                                      "Id" : {
                                         "type" : "string",
                                         "example" : "23683707994125"
                                       }
@@ -523,19 +523,19 @@
                               }
                             }
                           },
-                          "purposeCode" : {
+                          "Purp" : {
                             "type" : "object",
                             "properties" : {
-                              "code" : {
+                              "Cd" : {
                                 "type" : "string",
                                 "example" : "GDDS"
                               }
                             }
                           },
-                          "remitInfo" : {
+                          "RmtInf" : {
                             "type" : "object",
                             "properties" : {
-                              "structured" : {
+                              "Strd" : {
                                 "type" : "object",
                                 "properties" : {
                                   "RfrdDocInf" : {
